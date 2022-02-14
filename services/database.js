@@ -30,8 +30,9 @@ function getUserById(id) {
 }
 
 function getUserMatchesById(id) {
-  return database.query(
-    `
+  return database
+    .query(
+      `
       SELECT A.from_user_id AS me, B.from_user_id AS user_who_matched
 FROM likes A
 JOIN likes B
@@ -44,11 +45,11 @@ WHERE A.likes = true
       `,
       [id]
     )
-    .then((results) => results.rows[0]);
+    .then((results) => results.rows);
 }
 
 module.exports = {
   getUsers,
   getUserById,
-  getUserMatchesById
+  getUserMatchesById,
 };

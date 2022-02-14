@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
-const { getUsers, getUserById } = require("./services/database");
+const { getUsers, getUserById, getUserMatchesById } = require("./services/database");
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
