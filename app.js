@@ -42,3 +42,34 @@ app.get("/users/:userid/matches", async (req, res) => {
 app.listen(port, () => {
   console.log(`Twitter API listening on port ${port}`);
 });
+
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await getUserByUsername(username);
+
+    if (!user) {
+      return res.status(401).send({ error: "Unknown user" });
+    }
+
+    if (user.password !== password) {
+      return res.status(401).send({ error: "Wrong password" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+      },
+      Buffer.from(secret, "base64")
+    );
+
+    res.send({
+      token: token,
+    });
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
