@@ -26,7 +26,9 @@ app.get("/users", async (req, res) => {
 });
 
 app.get("/users/:userid", async (req, res) => {
-  const user = await getUserById();
+  const userId = req.params.userid;
+  const user = await getUserById(userId);
+  console.log(user);
   res.send(user);
 });
 
