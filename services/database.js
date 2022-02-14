@@ -48,8 +48,25 @@ WHERE A.likes = true
     .then((results) => results.rows);
 }
 
+function createUser(surname, firstname, email, password, bio) {
+  return database
+    .query(
+      `
+    INSERT INTO users
+      (surname, firstname, email, password, bio
+    VALUES
+      ($1, $2, $3, $4, $5)
+    RETURNING
+      *
+  `,
+      [surname, firstname, email, password, bio]
+    )
+    .then((results) => results.rows[0]);
+}
+
 module.exports = {
   getUsers,
   getUserById,
+  createUser,
   getUserMatchesById,
 };
