@@ -8,7 +8,7 @@ const { getUsers, getUserById, getUserMatchesById, createUser } = require("./ser
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
-console.log(port)
+console.log(port);
 
 const app = express();
 
