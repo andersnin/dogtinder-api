@@ -32,6 +32,12 @@ app.get("/users/:userid", async (req, res) => {
   res.send(user);
 });
 
+app.get("/users/:userid/matches", async (req, res) => {
+  const userId = req.params.userid;
+  const matches = await getUserMatchesById(userId);
+  res.send(matches);
+});
+
 app.listen(port, () => {
   console.log(`Twitter API listening on port ${port}`);
 });
