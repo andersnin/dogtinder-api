@@ -33,7 +33,7 @@ function getUserByEmail(email) {
   return database
     .query(
       `
-    SELECT id, firstname, surname, email FROM users WHERE email = $1
+    SELECT id, firstname, surname, email, password FROM users WHERE email = $1
   `,
       [email]
     )
