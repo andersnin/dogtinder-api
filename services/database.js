@@ -19,6 +19,18 @@ function getUsers() {
       .then((results) => results.rows);
   }
 
+  function getUserById(id) {
+    return database
+      .query(
+        `
+      SELECT * FROM users WHERE id = $1
+    `,
+        [id]
+      )
+      .then((results) => results.rows[0]);
+  }
+
   module.exports = {
     getUsers,
+    getUserById
   };
