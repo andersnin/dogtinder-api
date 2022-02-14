@@ -4,9 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
-const {
-    getUsers,
-  } = require("./services/database");
+const { getUsers, getUserById } = require("./services/database");
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
@@ -19,14 +17,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-    res.send({ message: "Hello from DogTinder!" });
-  });
+  res.send({ message: "Hello from DogTinder!" });
+});
 
-  app.get("/users", async (req, res) => {
-    const users = await getUsers();
-    res.send(users);
-  });
+app.get("/users", async (req, res) => {
+  const users = await getUsers();
+  res.send(users);
+});
+
+app.get("/users/:userid", async (req, res) => {
+  const user = await getUserById();
+  res.send(user);
+});
 
 app.listen(port, () => {
-    console.log(`Twitter API listening on port ${port}`);
-  });
+  console.log(`Twitter API listening on port ${port}`);
+});
