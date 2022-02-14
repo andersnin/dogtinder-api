@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
-const { getUsers, getUserById, getUserMatchesById, createUser } = require("./services/database");
+const { getUsers, getUserById, getUserMatchesById, createUser, getUserByEmail } = require("./services/database");
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
@@ -44,10 +44,10 @@ app.listen(port, () => {
 });
 
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await getUserByUsername(username);
+    const user = await getUserByEmail(email);
 
     if (!user) {
       return res.status(401).send({ error: "Unknown user" });
@@ -60,8 +60,9 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign(
       {
         id: user.id,
-        username: user.username,
-        name: user.name,
+        email: user.email,
+        firstname: user.firstname,
+        surname: user.surname,
       },
       Buffer.from(secret, "base64")
     );

@@ -29,6 +29,17 @@ function getUserById(id) {
     .then((results) => results.rows[0]);
 }
 
+function getUserByEmail(email) {
+  return database
+    .query(
+      `
+    SELECT * FROM users WHERE email = $1
+  `,
+      [email]
+    )
+    .then((results) => results.rows[0]);
+}
+
 function getUserMatchesById(id) {
   return database
     .query(
@@ -66,7 +77,8 @@ function createUser(surname, firstname, email, password, bio) {
 
 module.exports = {
   getUsers,
-  getUserById,
   createUser,
+  getUserById,
+  getUserByEmail,
   getUserMatchesById,
 };
