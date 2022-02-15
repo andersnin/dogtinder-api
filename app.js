@@ -47,7 +47,7 @@ app.post("/signup", async (req, res) => {
   const { surname, firstname, email, password, sex, breed, bio } = req.body;
 
   try {
-    const newUser = await createUser(name, username, password, img_url, bio);
+    const newUser = await createUser(surname, firstname, email, password, sex, breed, bio);
     res.send(newUser);
   } catch (error) {
     console.log(error);
