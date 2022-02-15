@@ -45,6 +45,7 @@ app.listen(port, () => {
 
 app.post("/signup", async (req, res) => {
   const { surname, firstname, email, password, sex, breed, bio } = req.body;
+  console.log(req.body);
 
   try {
     const newUser = await createUser(surname, firstname, email, password, sex, breed, bio);
@@ -59,7 +60,6 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
 
   try {
     const user = await getUserByEmail(email);
