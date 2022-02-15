@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
-const { getUsers, getUserById, getUserMatchesById, createUser, getUserByEmail } = require("./services/database");
+const { getUsers, getUserById, getUserMatchesById, createUser, getUserByEmail, getMessages } = require("./services/database");
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
@@ -58,9 +58,14 @@ app.post("/signup", async (req, res) => {
 });
 
 app.get("/messages/:fromuserid/:touserid", async (req, res) => {
-  const {fromuserid, touserid} = req.params;
-  const messages = await getMessages(fromuserid, touserid);
-  res.send(messages);
+  try {
+    const {fromuserid, touserid} = req.params;
+    const messages = await getMessages(fromuserid, touserid);
+    res.send(messages);
+  }
+  catch (error) {
+    res.status(500).send({ error: error.message });
+  }
 });
 
 app.post("/login", async (req, res) => {

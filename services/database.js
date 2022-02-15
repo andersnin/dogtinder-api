@@ -2,7 +2,7 @@ const { Pool } = require("pg");
 
 const database = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.IS_LOCAL ? undefined : { rejectUnauthorized: false },
+  ssl: process.env.IS_LOCAL ? { rejectUnauthorized: false } : { rejectUnauthorized: false },
 });
 
 function getUsers() {
@@ -47,8 +47,6 @@ function getMessages(from_user_id, to_user_id) {
 FROM messages
 WHERE (from_user_id = $1 AND  to_user_id = $2) OR (from_user_id = $2 AND  to_user_id = $1)
 ORDER BY created_at  DESC
-RETURNING
-      *
     `,
     [from_user_id, to_user_id]
   )
