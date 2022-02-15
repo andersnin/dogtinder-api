@@ -4,7 +4,15 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
-const { getUsers, getUserById, getUserMatchesById, createUser, getUserByEmail, getMessages } = require("./services/database");
+const {
+  getUsers,
+  getUserById,
+  getUserMatchesById,
+  createUser,
+  getUserByEmail,
+  getMessages,
+  deleteUser,
+} = require("./services/database");
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
@@ -47,7 +55,15 @@ app.post("/signup", async (req, res) => {
   console.log(req.body);
 
   try {
-    const newUser = await createUser(surname, firstname, email, password, sex, breed, bio);
+    const newUser = await createUser(
+      surname,
+      firstname,
+      email,
+      password,
+      sex,
+      breed,
+      bio
+    );
     res.send(newUser);
   } catch (error) {
     console.log(error);
@@ -59,11 +75,10 @@ app.post("/signup", async (req, res) => {
 
 app.get("/messages/:fromuserid/:touserid", async (req, res) => {
   try {
-    const {fromuserid, touserid} = req.params;
+    const { fromuserid, touserid } = req.params;
     const messages = await getMessages(fromuserid, touserid);
     res.send(messages);
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).send({ error: error.message });
   }
 });
@@ -97,5 +112,19 @@ app.post("/login", async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({ error: error.message });
+  }
+});
+
+app.get("/delete", async (req, res) => {
+  const token = req.headers["doggytoken"];
+
+  try {
+    const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+    const deleteUser = await deleteUser(payload.id);
+    res.send(deleteUser);
+  } catch (error) {
+    res.status(401).send({
+      error: "Unable to authenticate - please use a valid token",
+    });
   }
 });

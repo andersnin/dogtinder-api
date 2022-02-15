@@ -2,7 +2,9 @@ const { Pool } = require("pg");
 
 const database = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.IS_LOCAL ? { rejectUnauthorized: false } : { rejectUnauthorized: false },
+  ssl: process.env.IS_LOCAL
+    ? { rejectUnauthorized: false }
+    : { rejectUnauthorized: false },
 });
 
 function getUsers() {
@@ -41,16 +43,17 @@ function getUserByEmail(email) {
 }
 
 function getMessages(from_user_id, to_user_id) {
-  return database.query(
-    `
+  return database
+    .query(
+      `
     SELECT from_user_id, to_user_id, message, created_at
 FROM messages
 WHERE (from_user_id = $1 AND  to_user_id = $2) OR (from_user_id = $2 AND  to_user_id = $1)
 ORDER BY created_at  DESC
     `,
-    [from_user_id, to_user_id]
-  )
-  .then((results) => results.rows);
+      [from_user_id, to_user_id]
+    )
+    .then((results) => results.rows);
 }
 
 function getUserMatchesById(id) {
@@ -88,9 +91,22 @@ function createUser(surname, firstname, email, password, sex, breed, bio) {
     .then((results) => results.rows[0]);
 }
 
+function deleteUser(id) {
+  return database
+    .query(
+      `
+DELETE FROM users
+WHERE id=$1
+`,
+      [id]
+    )
+    .then((results) => results.rows[0]);
+}
+
 module.exports = {
   getUsers,
   createUser,
+  deleteUser,
   getUserById,
   getMessages,
   getUserByEmail,
