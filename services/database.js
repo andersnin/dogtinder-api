@@ -59,18 +59,18 @@ WHERE A.likes = true
     .then((results) => results.rows);
 }
 
-function createUser(surname, firstname, email, password, bio) {
+function createUser(surname, firstname, email, password, sex, breed, bio) {
   return database
     .query(
       `
     INSERT INTO users
-      (surname, firstname, email, password, bio
+      (surname, firstname, email, password, sex, breed, bio
     VALUES
-      ($1, $2, $3, $4, $5)
+      ($1, $2, $3, $4, $5, $6, $7)
     RETURNING
       *
   `,
-      [surname, firstname, email, password, bio]
+      [surname, firstname, email, password, sex, breed, bio]
     )
     .then((results) => results.rows[0]);
 }

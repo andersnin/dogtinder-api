@@ -43,6 +43,20 @@ app.listen(port, () => {
   console.log(`Twitter API listening on port ${port}`);
 });
 
+app.post("/signup", async (req, res) => {
+  const { name, username, password, img_url, bio } = req.body;
+
+  try {
+    const newUser = await createUser(name, username, password, img_url, bio);
+    res.send(newUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log(req.body);
