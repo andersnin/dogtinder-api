@@ -40,6 +40,21 @@ function getUserByEmail(email) {
     .then((results) => results.rows[0]);
 }
 
+function getMessages(from_user_id, to_user_id) {
+  return database.query(
+    `
+    SELECT from_user_id, to_user_id, message, created_at
+FROM messages
+WHERE (from_user_id = $1 AND  to_user_id = $2) OR (from_user_id = $2 AND  to_user_id = $1)
+ORDER BY created_at  DESC
+RETURNING
+      *
+    `,
+    [from_user_id, to_user_id]
+  )
+  .then((results) => results.rows);
+}
+
 function getUserMatchesById(id) {
   return database
     .query(
@@ -79,6 +94,7 @@ module.exports = {
   getUsers,
   createUser,
   getUserById,
+  getMessages,
   getUserByEmail,
   getUserMatchesById,
 };

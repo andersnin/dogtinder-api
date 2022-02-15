@@ -29,7 +29,6 @@ app.get("/users", async (req, res) => {
 app.get("/users/:userid", async (req, res) => {
   const userId = req.params.userid;
   const user = await getUserById(userId);
-  console.log(user);
   res.send(user);
 });
 
@@ -56,6 +55,12 @@ app.post("/signup", async (req, res) => {
       error: "Unable to contact database - please try again",
     });
   }
+});
+
+app.get("/messages/:fromuserid/:touserid", async (req, res) => {
+  const {fromuserid, touserid} = req.params;
+  const messages = await getMessages(fromuserid, touserid);
+  res.send(messages);
 });
 
 app.post("/login", async (req, res) => {
