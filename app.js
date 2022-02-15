@@ -11,6 +11,7 @@ const {
   getMessages,
   getUserById,
   getUserByEmail,
+  postNewMessage,
   getUserMatchesById,
   getPotentialMatches,
 } = require("./services/database");
@@ -83,6 +84,21 @@ app.post("/signup", async (req, res) => {
     console.log(error);
     res.status(500).send({
       error: "Unable to contact database - please try again",
+    });
+  }
+});
+
+app.post("/message", async (req, res) => {
+  const { token, newMessage, toUserId } = req.body;
+
+  try {
+    const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+    const message = await postNewMessage(payload.id, toUserId, newMessage)
+    res.send(message);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again later",
     });
   }
 });

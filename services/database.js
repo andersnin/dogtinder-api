@@ -57,6 +57,23 @@ ORDER BY created_at  DESC
     .then((results) => results.rows);
 }
 
+function postNewMessage(fromUserId, toUserId, newMessage) {
+  return database
+    .query(
+      `
+    INSERT INTO messages
+      (from_user_id, to_user_id, message)
+    VALUES
+      ($1, $2, $3)
+    RETURNING
+      *
+  `,
+      [fromUserId, toUserId, newMessage]
+    )
+    .then((results) => results.rows[0]);
+}
+
+
 function getPotentialMatches(id) {
   return database
     .query(
@@ -146,6 +163,7 @@ module.exports = {
   getUserById,
   getMessages,
   getUserByEmail,
+  postNewMessage,
   getUserMatchesById,
   editUserByUsername,
   getPotentialMatches,
