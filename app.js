@@ -44,7 +44,7 @@ app.listen(port, () => {
 });
 
 app.post("/signup", async (req, res) => {
-  const { name, username, password, img_url, bio } = req.body;
+  const { surname, firstname, email, password, sex, breed, bio } = req.body;
 
   try {
     const newUser = await createUser(name, username, password, img_url, bio);
