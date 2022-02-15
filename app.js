@@ -6,12 +6,13 @@ const jwt = require("jsonwebtoken");
 
 const {
   getUsers,
-  getUserById,
-  getUserMatchesById,
   createUser,
-  getUserByEmail,
-  getMessages,
   deleteUser,
+  getMessages,
+  getUserById,
+  getUserByEmail,
+  getUserMatchesById,
+  getPotentialMatches,
 } = require("./services/database");
 
 const port = process.env.PORT;
@@ -38,7 +39,19 @@ app.get("/users/:userid", async (req, res) => {
   const userId = req.params.userid;
   const user = await getUserById(userId);
   res.send(user);
-  console.log(user);
+});
+
+app.get("/swipecards/:userid", async (req, res) => {
+  try {
+    const userId = req.params.userid;
+    const users = await getPotentialMatches(userId);
+    res.send(users);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
 });
 
 app.get("/users/:userid/matches", async (req, res) => {

@@ -57,6 +57,28 @@ ORDER BY created_at  DESC
     .then((results) => results.rows);
 }
 
+function getPotentialMatches(id) {
+  return database
+    .query(
+      `SELECT
+      id, firstname, surname, bio, img_url, sex, breed, age
+  FROM
+      users
+  WHERE NOT EXISTS (
+      SELECT *
+      FROM
+          likes
+      WHERE
+          likes.from_user_id = $1 AND users.id = likes.to_user_id
+  )
+  AND NOT users.id = $1
+  ORDER BY id
+      `,
+      [id]
+    )
+    .then((results) => results.rows);
+}
+
 function getUserMatchesById(id) {
   return database
     .query(
@@ -92,6 +114,19 @@ function createUser(surname, firstname, email, password, sex, breed, bio) {
     .then((results) => results.rows[0]);
 }
 
+function editUserByUsername(id, surname, firstname, email, password, sex, breed, bio) {
+  return database
+    .query(
+      `UPDATE users SET (surname, firstname, email, password, sex, breed, bio) = ($2, $3, $4, $5, $6, $7)
+      WHERE id = $1
+      RETURNING
+      *
+`,
+      [id, surname, firstname, email, password, sex, breed, bio]
+    )
+    .then((results) => results.rows[0]);
+}
+
 function deleteUser(id) {
   return database
     .query(
@@ -112,4 +147,6 @@ module.exports = {
   getMessages,
   getUserByEmail,
   getUserMatchesById,
+  editUserByUsername,
+  getPotentialMatches,
 };
