@@ -18,7 +18,6 @@ const {
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
-console.log(port);
 
 const app = express();
 
@@ -67,7 +66,6 @@ app.listen(port, () => {
 
 app.post("/signup", async (req, res) => {
   const { surname, firstname, email, password, sex, breed, bio } = req.body;
-  console.log(req.body);
 
   try {
     const newUser = await createUser(
@@ -89,7 +87,8 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/message", async (req, res) => {
-  const { token, newMessage, toUserId } = req.body;
+  const { newMessage, toUserId } = req.body;
+  const token = req.headers["x-auth-token"];
 
   try {
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
