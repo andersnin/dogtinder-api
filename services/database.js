@@ -111,7 +111,7 @@ WHERE A.likes = true
     .then((results) => results.rows);
 }
 
-function createUser(surname, firstname, email, password, bio, breed, sex) {
+function createUser(surname, firstname, email, password, sex, breed, bio) {
   return database
     .query(
       `
