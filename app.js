@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const {
   getUsers,
   createUser,
+  editUser,
   deleteUser,
   getMessages,
   getUserById,
@@ -20,6 +21,7 @@ const {
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
+console.log(port);
 
 const app = express();
 
@@ -104,13 +106,30 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+app.put("/users/:userid", function (req, res) {
+  const { id, surname, firstname, email, password, sex, breed, bio } = req.body;
+
+  const updatedUser = editUser(
+    id,
+    surname,
+    firstname,
+    email,
+    password,
+    sex,
+    breed,
+    bio
+  );
+
+  res.send(updatedUser);
+});
+
 app.post("/message", async (req, res) => {
   const { newMessage, toUserId } = req.body;
   const token = req.headers["x-auth-token"];
 
   try {
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
-    const message = await postNewMessage(payload.id, toUserId, newMessage)
+    const message = await postNewMessage(payload.id, toUserId, newMessage);
     res.send(message);
   } catch (error) {
     console.log(error);

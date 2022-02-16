@@ -2,9 +2,7 @@ const { Pool } = require("pg");
 
 const database = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.IS_LOCAL
-    ? { rejectUnauthorized: false }
-    : { rejectUnauthorized: false },
+  ssl: process.env.IS_LOCAL ? undefined : { rejectUnauthorized: false },
 });
 
 function getUsers() {
@@ -24,8 +22,7 @@ function getUserById(id) {
   return database
     .query(
       `
-      SELECT * FROM users 
-      WHERE id = $1
+      SELECT * FROM users WHERE id = $1
     `,
       [id]
     )
@@ -53,18 +50,6 @@ WHERE (from_user_id = $1 AND  to_user_id = $2) OR (from_user_id = $2 AND  to_use
 ORDER BY created_at  DESC
     `,
       [from_user_id, to_user_id]
-    )
-    .then((results) => results.rows);
-}
-
-function getAllMessages() {
-  return database
-    .query(
-      `
-    SELECT *
-FROM messages
-ORDER BY created_at  DESC
-    `
     )
     .then((results) => results.rows);
 }
@@ -126,35 +111,26 @@ WHERE A.likes = true
     .then((results) => results.rows);
 }
 
-function createUser(surname, firstname, email, password, sex, breed, bio) {
+function createUser(surname, firstname, email, password, bio, breed, sex) {
   return database
     .query(
       `
     INSERT INTO users
-      (surname, firstname, email, password, sex, breed, bio)
+      (surname, firstname, email, password, bio, breed, sex)
     VALUES
       ($1, $2, $3, $4, $5, $6, $7)
     RETURNING
       *
   `,
-      [surname, firstname, email, password, sex, breed, bio]
+      [surname, firstname, email, password, bio, breed, sex]
     )
     .then((results) => results.rows[0]);
 }
 
-function editUserByUsername(
-  id,
-  surname,
-  firstname,
-  email,
-  password,
-  sex,
-  breed,
-  bio
-) {
+function editUser(id, surname, firstname, email, password, sex, breed, bio) {
   return database
     .query(
-      `UPDATE users SET (surname, firstname, email, password, sex, breed, bio) = ($2, $3, $4, $5, $6, $7)
+      `UPDATE users SET (surname, firstname, email, password, sex, breed, bio) = ($2, $3, $4, $5, $6, $7, $8)
       WHERE id = $1
       RETURNING
       *
@@ -203,6 +179,6 @@ module.exports = {
   getUserByEmail,
   postNewMessage,
   getUserMatchesById,
-  editUserByUsername,
+  editUser,
   getPotentialMatches,
 };
