@@ -11,6 +11,7 @@ const {
   deleteUser,
   getMessages,
   getUserById,
+  postReaction,
   getUserByEmail,
   getAllMessages,
   postNewMessage,
@@ -53,6 +54,22 @@ app.get("/swipecards/:userid", async (req, res) => {
     console.log(error);
     res.status(500).send({
       error: "Unable to contact database - please try again",
+    });
+  }
+});
+
+app.post("/swipecards", async (req, res) => {
+  const { to_user_id, likes } = req.body;
+  const token = req.headers["x-auth-token"];
+
+  try {
+    const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+    const reaction = await postReaction(payload.id, to_user_id, likes)
+    res.send(reaction);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again later",
     });
   }
 });
