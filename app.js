@@ -13,7 +13,6 @@ const {
   getUserById,
   postReaction,
   getUserByEmail,
-  getAllMessages,
   postNewMessage,
   getUserMatchesById,
   getPotentialMatches,

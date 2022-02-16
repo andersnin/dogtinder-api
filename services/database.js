@@ -170,6 +170,7 @@ function postReaction(from_user_id, to_user_id, likes) {
 
 module.exports = {
   getUsers,
+  editUser,
   createUser,
   deleteUser,
   getUserById,
@@ -178,6 +179,5 @@ module.exports = {
   getUserByEmail,
   postNewMessage,
   getUserMatchesById,
-  editUser,
   getPotentialMatches,
 };
