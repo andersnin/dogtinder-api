@@ -175,7 +175,6 @@ module.exports = {
   getUserById,
   getMessages,
   postReaction,
-  getAllMessages,
   getUserByEmail,
   postNewMessage,
   getUserMatchesById,
