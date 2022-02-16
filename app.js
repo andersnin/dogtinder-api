@@ -10,6 +10,7 @@ const {
   deleteUser,
   getMessages,
   getUserById,
+  postReaction,
   getUserByEmail,
   getAllMessages,
   postNewMessage,

@@ -176,12 +176,29 @@ WHERE id=$1
     .then((results) => results.rows[0]);
 }
 
+function postReaction(from_user_id, to_user_id, likes) {
+  return database
+    .query(
+      `
+    INSERT INTO likes
+      (from_user_id, to_user_id, likes)
+    VALUES
+      ($1, $2, $3)
+    RETURNING
+      *
+  `,
+      [from_user_id, to_user_id, likes]
+    )
+    .then((results) => results.rows[0]);
+}
+
 module.exports = {
   getUsers,
   createUser,
   deleteUser,
   getUserById,
   getMessages,
+  postReaction,
   getAllMessages,
   getUserByEmail,
   postNewMessage,
