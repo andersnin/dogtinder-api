@@ -165,7 +165,7 @@ function postReaction(from_user_id, to_user_id, likes) {
   `,
       [from_user_id, to_user_id, likes]
     )
-    .then((results) => results.rows[0]);
+    .then((results) => results.rows);
 }
 
 module.exports = {
