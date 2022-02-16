@@ -11,6 +11,7 @@ const {
   getMessages,
   getUserById,
   getUserByEmail,
+  getAllMessages,
   postNewMessage,
   getUserMatchesById,
   getPotentialMatches,
@@ -106,6 +107,15 @@ app.get("/messages/:fromuserid/:touserid", async (req, res) => {
   try {
     const { fromuserid, touserid } = req.params;
     const messages = await getMessages(fromuserid, touserid);
+    res.send(messages);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+app.get("/messages", async (req, res) => {
+  try {
+    const messages = await getAllMessages();
     res.send(messages);
   } catch (error) {
     res.status(500).send({ error: error.message });
