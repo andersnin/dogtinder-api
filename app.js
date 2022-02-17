@@ -106,7 +106,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.put("/users/:userid", function (req, res) {
+app.post("/users/:userid", function (req, res) {
   const { id, surname, firstname, email, password, sex, breed, bio } = req.body;
 
   const updatedUser = editUser(
