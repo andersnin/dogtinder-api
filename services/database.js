@@ -144,9 +144,9 @@ function deleteUser(id) {
   return database
     .query(
       `
-DELETE FROM users
-WHERE id=$1
-`,
+      DELETE FROM users
+      WHERE id = $1
+      `,
       [id]
     )
     .then((results) => results.rows[0]);

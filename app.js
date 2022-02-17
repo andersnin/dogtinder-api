@@ -63,7 +63,7 @@ app.post("/swipecards", async (req, res) => {
 
   try {
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
-    const reaction = await postReaction(payload.id, to_user_id, likes)
+    const reaction = await postReaction(payload.id, to_user_id, likes);
     res.send(reaction);
   } catch (error) {
     console.log(error);
@@ -77,10 +77,6 @@ app.get("/users/:userid/matches", async (req, res) => {
   const userId = req.params.userid;
   const matches = await getUserMatchesById(userId);
   res.send(matches);
-});
-
-app.listen(port, () => {
-  console.log(`Twitter API listening on port ${port}`);
 });
 
 app.post("/signup", async (req, res) => {
@@ -202,4 +198,8 @@ app.get("/delete", async (req, res) => {
       error: "Unable to authenticate - please use a valid token",
     });
   }
+});
+
+app.listen(port, () => {
+  console.log(`DogTinder API listening on port ${port}`);
 });
