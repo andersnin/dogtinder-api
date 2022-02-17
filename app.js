@@ -132,18 +132,28 @@ app.post("/signup", async (req, res) => {
 app.put("/users/:userid", function (req, res) {
   const { id, surname, firstname, email, password, sex, breed, bio } = req.body;
 
-  const updatedUser = editUser(
-    id,
-    surname,
-    firstname,
-    email,
-    password,
-    sex,
-    breed,
-    bio
-  );
+  try{
+    const updatedUser = editUser(
+      id,
+      surname,
+      firstname,
+      email,
+      password,
+      sex,
+      breed,
+      bio
+    );
+  
+    res.send(updatedUser);
 
-  res.send(updatedUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
+
+  
 });
 
 app.post("/message", async (req, res) => {
