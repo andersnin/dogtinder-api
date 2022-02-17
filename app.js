@@ -7,11 +7,12 @@ const jwt = require("jsonwebtoken");
 const {
   getUsers,
   createUser,
+  editUser,
   deleteUser,
   getMessages,
   getUserById,
+  postReaction,
   getUserByEmail,
-  getAllMessages,
   postNewMessage,
   getUserMatchesById,
   getPotentialMatches,
@@ -19,6 +20,7 @@ const {
 
 const port = process.env.PORT;
 const secret = process.env.SECRET;
+console.log(port);
 
 const app = express();
 
@@ -72,6 +74,22 @@ app.get("/swipecards/:userid", async (req, res) => {
   }
 });
 
+app.post("/swipecards", async (req, res) => {
+  const { to_user_id, likes } = req.body;
+  const token = req.headers["x-auth-token"];
+
+  try {
+    const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+    const reaction = await postReaction(payload.id, to_user_id, likes);
+    res.send(reaction);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again later",
+    });
+  }
+});
+
 app.get("/users/:userid/matches", async (req, res) => {
 
   try{
@@ -88,12 +106,9 @@ app.get("/users/:userid/matches", async (req, res) => {
   
 });
 
-app.listen(port, () => {
-  console.log(`Twitter API listening on port ${port}`);
-});
-
 app.post("/signup", async (req, res) => {
   const { surname, firstname, email, password, sex, breed, bio } = req.body;
+  console.log(req.body);
 
   try {
     const newUser = await createUser(
@@ -114,13 +129,30 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+app.put("/users/:userid", function (req, res) {
+  const { id, surname, firstname, email, password, sex, breed, bio } = req.body;
+
+  const updatedUser = editUser(
+    id,
+    surname,
+    firstname,
+    email,
+    password,
+    sex,
+    breed,
+    bio
+  );
+
+  res.send(updatedUser);
+});
+
 app.post("/message", async (req, res) => {
   const { newMessage, toUserId } = req.body;
   const token = req.headers["x-auth-token"];
 
   try {
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
-    const message = await postNewMessage(payload.id, toUserId, newMessage)
+    const message = await postNewMessage(payload.id, toUserId, newMessage);
     res.send(message);
   } catch (error) {
     console.log(error);
@@ -193,4 +225,8 @@ app.get("/delete", async (req, res) => {
       error: "Unable to authenticate - please use a valid token",
     });
   }
+});
+
+app.listen(port, () => {
+  console.log(`DogTinder API listening on port ${port}`);
 });
