@@ -34,14 +34,31 @@ app.get("/", (req, res) => {
 });
 
 app.get("/users", async (req, res) => {
-  const users = await getUsers();
-  res.send(users);
+  try{
+    const users = await getUsers();
+    res.send(users);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
+  
 });
 
 app.get("/users/:userid", async (req, res) => {
-  const userId = req.params.userid;
-  const user = await getUserById(userId);
-  res.send(user);
+  try{
+    const userId = req.params.userid;
+    const user = await getUserById(userId);
+    res.send(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
+  
 });
 
 app.get("/swipecards/:userid", async (req, res) => {
@@ -74,9 +91,19 @@ app.post("/swipecards", async (req, res) => {
 });
 
 app.get("/users/:userid/matches", async (req, res) => {
-  const userId = req.params.userid;
-  const matches = await getUserMatchesById(userId);
-  res.send(matches);
+
+  try{
+    const userId = req.params.userid;
+    const matches = await getUserMatchesById(userId);
+    res.send(matches);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+    error: "Unable to contact database - please try again",
+    });
+  }
+  
 });
 
 app.post("/signup", async (req, res) => {
@@ -105,18 +132,28 @@ app.post("/signup", async (req, res) => {
 app.put("/users/:userid", function (req, res) {
   const { id, surname, firstname, email, password, sex, breed, bio } = req.body;
 
-  const updatedUser = editUser(
-    id,
-    surname,
-    firstname,
-    email,
-    password,
-    sex,
-    breed,
-    bio
-  );
+  try{
+    const updatedUser = editUser(
+      id,
+      surname,
+      firstname,
+      email,
+      password,
+      sex,
+      breed,
+      bio
+    );
+  
+    res.send(updatedUser);
 
-  res.send(updatedUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again",
+    });
+  }
+
+  
 });
 
 app.post("/message", async (req, res) => {
