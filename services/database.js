@@ -96,14 +96,16 @@ function getUserMatchesById(id) {
   return database
     .query(
       `
-      SELECT A.from_user_id AS me, B.from_user_id AS user_who_matched
-FROM likes A
-JOIN likes B
-  ON A.from_user_id = B.to_user_id
-  AND A.to_user_id = B.from_user_id
-  AND A.id <> B.id
-WHERE A.likes = true 
-  AND B.likes = true
+      SELECT U.surname, U.firstname, U.img_url, U.bio, U.age, U.sex, A.from_user_id AS me, B.from_user_id AS user_who_matched
+      FROM likes A
+      JOIN users U
+      ON U.id = A.to_user_id
+      JOIN likes B
+        ON A.from_user_id = B.to_user_id
+        AND A.to_user_id = B.from_user_id
+        AND A.id <> B.id
+      WHERE A.likes = true 
+        AND B.likes = true
   AND A.from_user_id = $1;
       `,
       [id]
