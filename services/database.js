@@ -96,7 +96,7 @@ function getUserMatchesById(id) {
   return database
     .query(
       `
-      SELECT U.surname, U.firstname, U.img_url, U.bio, U.age, U.sex, A.from_user_id AS me, B.from_user_id AS user_who_matched
+      SELECT A.id, U.surname, U.firstname, U.img_url, U.bio, U.age, U.sex, A.from_user_id AS me, B.from_user_id AS user_who_matched
       FROM likes A
       JOIN users U
       ON U.id = A.to_user_id
