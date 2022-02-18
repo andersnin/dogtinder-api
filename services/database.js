@@ -162,12 +162,10 @@ function postReaction(from_user_id, to_user_id, likes) {
   return database
     .query(
       `
-    INSERT INTO likes
-      (from_user_id, to_user_id, likes)
-    VALUES
-      ($1, $2, $3)
-    RETURNING
-      *
+      UPDATE likes SET likes=$3 WHERE from_user_id=$1 AND to_user_id=$2;
+      INSERT INTO likes (from_user_id, to_user_id, likes)
+             SELECT $1, $2, $3
+             WHERE NOT EXISTS (SELECT 1 FROM likes WHERE from_user_id=$1 AND to_user_id=$2);
   `,
       [from_user_id, to_user_id, likes]
     )
