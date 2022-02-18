@@ -81,6 +81,7 @@ app.post("/swipecards", async (req, res) => {
   try {
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
     const reaction = await postReaction(payload.id, to_user_id, likes);
+    console.log(reaction);
     res.send(reaction);
   } catch (error) {
     console.log(error);

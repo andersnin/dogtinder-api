@@ -159,17 +159,20 @@ function deleteUser(id) {
 }
 
 function postReaction(from_user_id, to_user_id, likes) {
+  console.log(from_user_id, to_user_id, likes);
   return database
     .query(
       `
-      UPDATE likes SET likes=$3 WHERE from_user_id=$1 AND to_user_id=$2;
+      UPDATE likes SET likes=$3 
+      WHERE from_user_id=$1 AND to_user_id=$2;
       INSERT INTO likes (from_user_id, to_user_id, likes)
              SELECT $1, $2, $3
-             WHERE NOT EXISTS (SELECT 1 FROM likes WHERE from_user_id=$1 AND to_user_id=$2);
+             WHERE NOT EXISTS (SELECT 1 FROM likes 
+             WHERE from_user_id=$1 AND to_user_id=$2);
   `,
       [from_user_id, to_user_id, likes]
     )
-    .then((results) => results.rows);
+    .then((results) => results.rows[0]);
 }
 
 module.exports = {
