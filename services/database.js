@@ -68,7 +68,7 @@ FROM messages M
 JOIN users U
 ON M.from_user_id = U.id
 WHERE from_user_id = $1 OR to_user_id = $1
-ORDER BY created_at DESC;
+ORDER BY created_at DESC
     `,
       [id]
     )
@@ -176,7 +176,6 @@ function deleteUser(id) {
 }
 
 function postReaction(from_user_id, to_user_id, likes) {
-  console.log(from_user_id, to_user_id, likes);
   return database
     .query(
       `
