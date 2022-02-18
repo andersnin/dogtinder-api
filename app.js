@@ -165,7 +165,7 @@ app.post("/message", async (req, res) => {
   }
 });
 
-app.get("/message", async (req, res) => {
+app.get("/messages", async (req, res) => {
   const token = req.headers["x-auth-token"];
 
   try {
