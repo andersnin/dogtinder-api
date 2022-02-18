@@ -44,7 +44,7 @@ function getMessages(from_user_id, to_user_id) {
   return database
     .query(
       `
-      SELECT M.id, U.firstname as to_firstname, U.surname as to_surname, U2.firstname as from_firstname, U2.surname as from_surname, U2.img_url as from_img_url, M.from_user_id, M.to_user_id, M.message, M.created_at
+      SELECT M.id, U.firstname as from_firstname, U.surname as from_surname, U.img_url as from_img_url, U2.firstname as to_firstname, U2.surname as to_surname, M.from_user_id, M.to_user_id, M.message, M.created_at
       FROM messages M
       JOIN users U
       ON M.from_user_id = U.id
