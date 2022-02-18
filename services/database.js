@@ -44,8 +44,12 @@ function getMessages(from_user_id, to_user_id) {
   return database
     .query(
       `
-    SELECT id, from_user_id, to_user_id, message, created_at
-FROM messages
+      SELECT M.id, U.firstname as to_firstname, U.surname as to_surname, U2.firstname as from_firstname, U2.surname as from_surname, M.from_user_id, M.to_user_id, M.message, M.created_at
+      FROM messages M
+      JOIN users U
+      ON M.from_user_id = U.id
+      JOIN users U2
+      ON M.to_user_id = U2.id
 WHERE (from_user_id = $1 AND  to_user_id = $2) OR (from_user_id = $2 AND  to_user_id = $1)
 ORDER BY created_at  DESC
     `,
