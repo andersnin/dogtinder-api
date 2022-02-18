@@ -16,6 +16,7 @@ const {
   postNewMessage,
   getUserMatchesById,
   getPotentialMatches,
+  getMessagesByUserId,
 } = require("./services/database");
 
 const port = process.env.PORT;
@@ -34,21 +35,19 @@ app.get("/", (req, res) => {
 });
 
 app.get("/users", async (req, res) => {
-  try{
+  try {
     const users = await getUsers();
     res.send(users);
-
   } catch (error) {
     console.log(error);
     res.status(500).send({
       error: "Unable to contact database - please try again",
     });
   }
-  
 });
 
 app.get("/users/:userid", async (req, res) => {
-  try{
+  try {
     const userId = req.params.userid;
     const user = await getUserById(userId);
     res.send(user);
@@ -58,7 +57,6 @@ app.get("/users/:userid", async (req, res) => {
       error: "Unable to contact database - please try again",
     });
   }
-  
 });
 
 app.get("/swipecards/:userid", async (req, res) => {
@@ -92,19 +90,16 @@ app.post("/swipecards", async (req, res) => {
 });
 
 app.get("/users/:userid/matches", async (req, res) => {
-
-  try{
+  try {
     const userId = req.params.userid;
     const matches = await getUserMatchesById(userId);
     res.send(matches);
-
   } catch (error) {
     console.log(error);
     res.status(500).send({
-    error: "Unable to contact database - please try again",
+      error: "Unable to contact database - please try again",
     });
   }
-  
 });
 
 app.post("/signup", async (req, res) => {
@@ -133,7 +128,7 @@ app.post("/signup", async (req, res) => {
 app.put("/users/:userid", function (req, res) {
   const { id, surname, firstname, email, password, sex, breed, bio } = req.body;
 
-  try{
+  try {
     const updatedUser = editUser(
       id,
       surname,
@@ -144,17 +139,14 @@ app.put("/users/:userid", function (req, res) {
       breed,
       bio
     );
-  
-    res.send(updatedUser);
 
+    res.send(updatedUser);
   } catch (error) {
     console.log(error);
     res.status(500).send({
       error: "Unable to contact database - please try again",
     });
   }
-
-  
 });
 
 app.post("/message", async (req, res) => {
@@ -173,19 +165,25 @@ app.post("/message", async (req, res) => {
   }
 });
 
+app.get("/message", async (req, res) => {
+  const token = req.headers["x-auth-token"];
+
+  try {
+    const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+    const messages = await getMessagesByUserId(payload.id);
+    res.send(messages);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      error: "Unable to contact database - please try again later",
+    });
+  }
+});
+
 app.get("/messages/:fromuserid/:touserid", async (req, res) => {
   try {
     const { fromuserid, touserid } = req.params;
     const messages = await getMessages(fromuserid, touserid);
-    res.send(messages);
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-});
-
-app.get("/messages", async (req, res) => {
-  try {
-    const messages = await getAllMessages();
     res.send(messages);
   } catch (error) {
     res.status(500).send({ error: error.message });

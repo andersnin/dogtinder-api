@@ -1,3 +1,4 @@
+const { get } = require("express/lib/response");
 const { Pool } = require("pg");
 
 const database = new Pool({
@@ -54,6 +55,22 @@ WHERE (from_user_id = $1 AND  to_user_id = $2) OR (from_user_id = $2 AND  to_use
 ORDER BY created_at  DESC
     `,
       [from_user_id, to_user_id]
+    )
+    .then((results) => results.rows);
+}
+
+function getMessagesByUserId(id) {
+  return database
+    .query(
+      `
+      SELECT M.id, U.firstname as from_firstname, U.surname as from_surname, U.img_url as from_img_url, M.from_user_id, M.to_user_id, M.message, M.created_at
+FROM messages M
+JOIN users U
+ON M.from_user_id = U.id
+WHERE from_user_id = $1 OR to_user_id = $1
+ORDER BY created_at DESC;
+    `,
+      [id]
     )
     .then((results) => results.rows);
 }
@@ -186,5 +203,6 @@ module.exports = {
   getUserByEmail,
   postNewMessage,
   getUserMatchesById,
+  getMessagesByUserId,
   getPotentialMatches,
 };
