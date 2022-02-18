@@ -3,7 +3,7 @@ const { Pool } = require("pg");
 
 const database = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.IS_LOCAL ? undefined : { rejectUnauthorized: false },
+  ssl: { rejectUnauthorized: false },
 });
 
 function getUsers() {
@@ -181,6 +181,7 @@ function postReaction(from_user_id, to_user_id, likes) {
       `
       UPDATE likes SET likes=$3 
       WHERE from_user_id=$1 AND to_user_id=$2;
+
       INSERT INTO likes (from_user_id, to_user_id, likes)
              SELECT $1, $2, $3
              WHERE NOT EXISTS (SELECT 1 FROM likes 
