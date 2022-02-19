@@ -1,5 +1,13 @@
 const { get } = require("express/lib/response");
 const { Pool } = require("pg");
+const pgp = require('pg-promise')();
+
+const connection = {
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+}
+
+const db = pgp(connection);
 
 const database = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -125,7 +133,7 @@ function getUserMatchesById(id) {
         ON A.from_user_id = B.to_user_id
         AND A.to_user_id = B.from_user_id
         AND A.id <> B.id
-      WHERE A.likes = true 
+      WHERE A.likes = true
         AND B.likes = true
   AND A.from_user_id = $1;
       `,
@@ -175,21 +183,20 @@ function deleteUser(id) {
     .then((results) => results.rows[0]);
 }
 
-function postReaction(from_user_id, to_user_id, likes) {
-  return database
-    .query(
+async function postReaction(from_user_id, to_user_id, likes) {
+  const query = await db
+    .multi(
       `
-      UPDATE likes SET likes=$3 
-      WHERE from_user_id=$1 AND to_user_id=$2;
+      UPDATE likes SET likes=${likes}
+      WHERE from_user_id=${from_user_id} AND to_user_id=${to_user_id};
 
       INSERT INTO likes (from_user_id, to_user_id, likes)
-             SELECT $1, $2, $3
-             WHERE NOT EXISTS (SELECT 1 FROM likes 
-             WHERE from_user_id=$1 AND to_user_id=$2);
-  `,
-      [from_user_id, to_user_id, likes]
-    )
-    .then((results) => results.rows[0]);
+             SELECT ${from_user_id}, ${to_user_id}, ${likes}
+             WHERE NOT EXISTS (SELECT 1 FROM likes
+             WHERE from_user_id=${from_user_id} AND to_user_id=${to_user_id});
+  `
+    ).then(res => {return res.rows}) 
+  return query;
 }
 
 module.exports = {
