@@ -102,7 +102,7 @@ app.get("/users/:userid/matches", async (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  const { img_url, surname, firstname, email, password, sex, breed, bio } =
+  const { img_url, surname, firstname, email, password, sex, age, breed, bio } =
     req.body;
   console.log(req.body);
 
@@ -114,6 +114,7 @@ app.post("/signup", async (req, res) => {
       email,
       password,
       sex,
+      age,
       breed,
       bio
     );
@@ -127,7 +128,18 @@ app.post("/signup", async (req, res) => {
 });
 
 app.put("/users/:userid", function (req, res) {
-  const { id, surname, firstname, email, password, sex, breed, bio } = req.body;
+  const {
+    id,
+    surname,
+    firstname,
+    email,
+    password,
+    sex,
+    age,
+    breed,
+    bio,
+    img_url,
+  } = req.body;
 
   try {
     const updatedUser = editUser(
@@ -137,8 +149,10 @@ app.put("/users/:userid", function (req, res) {
       email,
       password,
       sex,
+      age,
       breed,
-      bio
+      bio,
+      img_url
     );
 
     res.send(updatedUser);
