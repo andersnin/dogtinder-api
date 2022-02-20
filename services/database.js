@@ -1,11 +1,11 @@
 const { get } = require("express/lib/response");
 const { Pool } = require("pg");
-const pgp = require('pg-promise')();
+const pgp = require("pg-promise")();
 
 const connection = {
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
-}
+};
 
 const db = pgp(connection);
 
@@ -149,6 +149,7 @@ function createUser(
   email,
   password,
   sex,
+  age,
   breed,
   bio
 ) {
@@ -156,26 +157,37 @@ function createUser(
     .query(
       `
     INSERT INTO users
-      (img_url, surname, firstname, email, password, bio, breed, sex)
+      (img_url, surname, firstname, email, password, bio, breed, sex, age)
     VALUES
-      ($1, $2, $3, $4, $5, $6, $7, $8)
+      ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING
       *
   `,
-      [img_url, surname, firstname, email, password, bio, breed, sex]
+      [img_url, surname, firstname, email, password, bio, breed, sex, age]
     )
     .then((results) => results.rows[0]);
 }
 
-function editUser(id, surname, firstname, email, password, sex, breed, bio) {
+function editUser(
+  id,
+  surname,
+  firstname,
+  email,
+  password,
+  sex,
+  age,
+  breed,
+  bio,
+  img_url
+) {
   return database
     .query(
-      `UPDATE users SET (surname, firstname, email, password, sex, breed, bio) = ($2, $3, $4, $5, $6, $7, $8)
+      `UPDATE users SET (surname, firstname, email, password, sex, age, breed, bio, img_url) = ($2, $3, $4, $5, $6, $7, $8, $9, $10)
       WHERE id = $1
       RETURNING
       *
-`,
-      [id, surname, firstname, email, password, sex, breed, bio]
+      `,
+      [id, surname, firstname, email, password, sex, age, breed, bio, img_url]
     )
     .then((results) => results.rows[0]);
 }
@@ -204,7 +216,10 @@ async function postReaction(from_user_id, to_user_id, likes) {
              WHERE NOT EXISTS (SELECT 1 FROM likes
              WHERE from_user_id=${from_user_id} AND to_user_id=${to_user_id});
   `
-    ).then(res => {return res.rows}) 
+    )
+    .then((res) => {
+      return res.rows;
+    });
   return query;
 }
 
