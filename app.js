@@ -102,11 +102,13 @@ app.get("/users/:userid/matches", async (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  const { surname, firstname, email, password, sex, breed, bio } = req.body;
+  const { img_url, surname, firstname, email, password, sex, breed, bio } =
+    req.body;
   console.log(req.body);
 
   try {
     const newUser = await createUser(
+      img_url,
       surname,
       firstname,
       email,
