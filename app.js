@@ -34,17 +34,29 @@ app.use(cors());
 var server = http.createServer(app);
 
 const { Server } = require("socket.io");
+const { resourceLimits } = require("worker_threads");
+const { SocketAddress } = require("net");
 const io = new Server(server, {
   transport: "polling",
   cors: {
-    origin: "*"
-  }
+    origin: "*",
+  },
 });
 
 io.on("connection", (socket) => {
-  /* socket object may be used to send specific messages to the new connected client */
-  console.log("new client connected");
   socket.emit("connection", null);
+
+  socket.on("getMessages", (token) => {
+    setInterval(async function () {
+      const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+      let messages = await getMessagesByUserId(payload.id);
+      socket.emit("recieveMessages", messages);
+    }, 1000);
+  });
+
+  socket.on("end", function () {
+    socket.disconnect(0);
+  });
 });
 
 server.listen(port, () => {
