@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-var http = require('http');
+var http = require("http");
 
 const {
   getUsers,
@@ -20,8 +20,6 @@ const {
   getMessagesByUserId,
 } = require("./services/database");
 
-
-
 // Express Server
 
 const port = process.env.PORT;
@@ -29,31 +27,24 @@ const secret = process.env.SECRET;
 
 const app = express();
 
+app.use(cors());
+
 // Websocket Server
 
 var server = http.createServer(app);
 
 const { Server } = require("socket.io");
-const io = new Server(server);
-
-let interval;
-
-const getApiAndEmit = socket => {
-  const response = new Date();
-  // Emitting a new message. Will be consumed by the client
-  socket.emit("FromAPI", response);
-};
+const io = new Server(server, {
+  transport: "polling",
+  cors: {
+    origin: "*"
+  }
+});
 
 io.on("connection", (socket) => {
-  console.log("New client connected");
-  if (interval) {
-    clearInterval(interval);
-  }
-  interval = setInterval(() => getApiAndEmit(socket), 1000);
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-    clearInterval(interval);
-  });
+  /* socket object may be used to send specific messages to the new connected client */
+  console.log("new client connected");
+  socket.emit("connection", null);
 });
 
 server.listen(port, () => {
@@ -61,8 +52,6 @@ server.listen(port, () => {
 });
 
 // Server functions
-
-app.use(cors());
 
 app.use(bodyParser.json());
 
@@ -272,5 +261,3 @@ app.get("/delete", async (req, res) => {
     });
   }
 });
-
-
