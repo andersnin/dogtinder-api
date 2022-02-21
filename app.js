@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+var http = require('http');
 
 const {
   getUsers,
@@ -19,15 +20,52 @@ const {
   getMessagesByUserId,
 } = require("./services/database");
 
+
+
+// Express Server
+
 const port = process.env.PORT;
 const secret = process.env.SECRET;
-console.log(port);
 
 const app = express();
+
+// Websocket Server
+
+var server = http.createServer(app);
+
+const { Server } = require("socket.io");
+const io = new Server(server);
+
+let interval;
+
+const getApiAndEmit = socket => {
+  const response = new Date();
+  // Emitting a new message. Will be consumed by the client
+  socket.emit("FromAPI", response);
+};
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => getApiAndEmit(socket), 1000);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+    clearInterval(interval);
+  });
+});
+
+server.listen(port, () => {
+  console.log(`DogTinder WS-API listening on port ${port}`);
+});
+
+// Server functions
 
 app.use(cors());
 
 app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
@@ -251,6 +289,4 @@ app.get("/delete", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`DogTinder API listening on port ${port}`);
-});
+
