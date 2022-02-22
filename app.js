@@ -47,15 +47,23 @@ io.on("connection", (socket) => {
   socket.emit("connection", null);
 
   socket.on("getMessages", ({token, string}) => {
+    console.log(token, string);
     setInterval(async function () {
-      const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+      try {const payload = jwt.verify(token, Buffer.from(secret, "base64"));
       let messages = await getMessages(payload.id, string);
       socket.emit("recieveMessages", messages);
+    } catch(error) {
+      console.log(error);
+      socket.emit('oops', {error});
+    }
+      
     }, 1000);
+
   });
 
   socket.on("end", function () {
     socket.disconnect(0);
+    console.log('User disconnected');
   });
 });
 
