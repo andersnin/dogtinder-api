@@ -46,10 +46,10 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   socket.emit("connection", null);
 
-  socket.on("getMessages", (token) => {
+  socket.on("getMessages", ({token, string}) => {
     setInterval(async function () {
       const payload = jwt.verify(token, Buffer.from(secret, "base64"));
-      let messages = await getMessagesByUserId(payload.id);
+      let messages = await getMessages(payload.id, string);
       socket.emit("recieveMessages", messages);
     }, 1000);
   });
