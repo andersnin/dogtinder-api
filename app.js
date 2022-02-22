@@ -47,7 +47,6 @@ io.on("connection", (socket) => {
   socket.emit("connection", null);
 
   socket.on("getMessages", ({token, string}) => {
-    console.log(token, string);
     setInterval(async function () {
       try {const payload = jwt.verify(token, Buffer.from(secret, "base64"));
       let messages = await getMessages(payload.id, string);
