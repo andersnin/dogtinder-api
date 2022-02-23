@@ -207,7 +207,7 @@ async function deleteUser(id) {
     .then((res) => {
       return res.rows;
     });
-  return query;
+  return {userDeleted: true};
 }
 
 async function postReaction(from_user_id, to_user_id, likes) {
