@@ -45,6 +45,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   socket.emit("connection", null);
+  console.log("user connected");
 
   socket.on("getMessages", ({ token, string }) => {
     setInterval(async function () {
@@ -57,19 +58,19 @@ io.on("connection", (socket) => {
         socket.emit("oops", { error });
       }
     }, 1000);
+  });
 
-    socket.on("getMatches", (token) => {
-      setInterval(async function () {
-        try {
-          const payload = jwt.verify(token, Buffer.from(secret, "base64"));
-          let potentialMatches = await getPotentialMatches(payload.id);
-          socket.emit("recieveMatches", potentialMatches);
-        } catch (error) {
-          console.log(error);
-          socket.emit("oops", { error });
-        }
-      }, 1000);
-    });
+  socket.on("getMatches", (token) => {
+    setInterval(async function () {
+      try {
+        const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+        let potentialMatches = await getPotentialMatches(payload.id);
+        socket.emit("recieveMatches", potentialMatches);
+      } catch (error) {
+        console.log(error);
+        socket.emit("oops", { error });
+      }
+    }, 1000);
   });
 
   socket.on("end", function () {

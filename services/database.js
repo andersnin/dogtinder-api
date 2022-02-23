@@ -195,13 +195,13 @@ function editUser(
 }
 
 function deleteUser(id) {
-  return database
-    .query(
+  return db
+    .multi(
       `
-      DELETE FROM users
-      WHERE id = $1
-      `,
-      [id]
+      DELETE FROM likes WHERE from_user_id = ${id} OR to_user_id = ${id};
+      DELETE FROM messages WHERE from_user_id = ${id} OR to_user_id = ${id};
+      DELETE from users WHERE id = ${id};
+      `
     )
     .then((results) => results.rows[0]);
 }
