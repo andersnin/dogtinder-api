@@ -194,8 +194,9 @@ function editUser(
     .then((results) => results.rows[0]);
 }
 
-function deleteUser(id) {
-  return db
+async function deleteUser(id) {
+  console.log(id);
+  const query = await db
     .multi(
       `
       DELETE FROM likes WHERE from_user_id = ${id} OR to_user_id = ${id};
@@ -203,7 +204,10 @@ function deleteUser(id) {
       DELETE from users WHERE id = ${id};
       `
     )
-    .then((results) => results.rows[0]);
+    .then((res) => {
+      return res.rows;
+    });
+  return query;
 }
 
 async function postReaction(from_user_id, to_user_id, likes) {

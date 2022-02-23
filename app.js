@@ -296,16 +296,15 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/delete", async (req, res) => {
-  console.log('hei');
-  const token = req.headers["x-auth-token"];
+app.delete("/delete", async (req, res) => {
 
   try {
+    const token = req.headers["x-auth-token"];
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
-    console.log(payload.id);
-    const deleteUser = await deleteUser(payload.id);
-    res.send(deleteUser);
+    const deleter = await deleteUser(payload.id);
+    res.send(deleter);
   } catch (error) {
+    console.log(error);
     res.status(401).send({
       error: "Unable to authenticate - please use a valid token",
     });
