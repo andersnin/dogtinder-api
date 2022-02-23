@@ -46,23 +46,35 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   socket.emit("connection", null);
 
-  socket.on("getMessages", ({token, string}) => {
+  socket.on("getMessages", ({ token, string }) => {
     setInterval(async function () {
-      try {const payload = jwt.verify(token, Buffer.from(secret, "base64"));
-      let messages = await getMessages(payload.id, string);
-      socket.emit("recieveMessages", messages);
-    } catch(error) {
-      console.log(error);
-      socket.emit('oops', {error});
-    }
-      
+      try {
+        const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+        let messages = await getMessages(payload.id, string);
+        socket.emit("recieveMessages", messages);
+      } catch (error) {
+        console.log(error);
+        socket.emit("oops", { error });
+      }
     }, 1000);
 
+    socket.on("getMatches", (token) => {
+      setInterval(async function () {
+        try {
+          const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+          let potentialMatches = await getPotentialMatches(payload.id);
+          socket.emit("recieveMatches", potentialMatches);
+        } catch (error) {
+          console.log(error);
+          socket.emit("oops", { error });
+        }
+      }, 1000);
+    });
   });
 
   socket.on("end", function () {
     socket.disconnect(0);
-    console.log('User disconnected');
+    console.log("User disconnected");
   });
 });
 
