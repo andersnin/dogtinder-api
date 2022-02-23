@@ -297,10 +297,12 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/delete", async (req, res) => {
+  console.log('hei');
   const token = req.headers["x-auth-token"];
 
   try {
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
+    console.log(payload.id);
     const deleteUser = await deleteUser(payload.id);
     res.send(deleteUser);
   } catch (error) {
