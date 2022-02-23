@@ -297,7 +297,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/delete", async (req, res) => {
-  const token = req.headers["doggytoken"];
+  const token = req.headers["x-auth-token"];
 
   try {
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
