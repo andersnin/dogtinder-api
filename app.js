@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 var http = require("http");
+const bcrypt = require("bcrypt");
 
 const {
   getUsers,
@@ -163,7 +164,9 @@ app.get("/users/:userid/matches", async (req, res) => {
 app.post("/signup", async (req, res) => {
   const { img_url, surname, firstname, email, password, sex, age, breed, bio } =
     req.body;
-  console.log(req.body);
+  // Hashing password
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   try {
     const newUser = await createUser(
@@ -171,7 +174,7 @@ app.post("/signup", async (req, res) => {
       surname,
       firstname,
       email,
-      password,
+      hashedPassword,
       sex,
       age,
       breed,
@@ -186,7 +189,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.put("/users/:userid", function (req, res) {
+app.put("/users/:userid", async (req, res) => {
   const {
     id,
     surname,
@@ -200,13 +203,23 @@ app.put("/users/:userid", function (req, res) {
     img_url,
   } = req.body;
 
+  // checks if password is changed for re-hashing
+  const user = await getUserById(id);
+  const passwordIsChanged = user.password !== password;
+  let newPassword = "";
+
+  if (passwordIsChanged) {
+    const saltRounds = 10;
+    newPassword = await bcrypt.hash(password, saltRounds);
+  }
+
   try {
     const updatedUser = editUser(
       id,
       surname,
       firstname,
       email,
-      password,
+      passwordIsChanged ? newPassword : password,
       sex,
       age,
       breed,
@@ -273,31 +286,31 @@ app.post("/login", async (req, res) => {
     if (!user) {
       return res.status(401).send({ error: "Unknown user" });
     }
-
-    if (user.password !== password) {
+    // Load hash from your password DB
+    const isCorrectPassword = await bcrypt.compare(password, user.password);
+    if (!isCorrectPassword) {
       return res.status(401).send({ error: "Wrong password" });
+    } else {
+      const token = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          firstname: user.firstname,
+          surname: user.surname,
+        },
+        Buffer.from(secret, "base64")
+      );
+
+      res.send({
+        token: token,
+      });
     }
-
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        firstname: user.firstname,
-        surname: user.surname,
-      },
-      Buffer.from(secret, "base64")
-    );
-
-    res.send({
-      token: token,
-    });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 });
 
 app.delete("/delete", async (req, res) => {
-
   try {
     const token = req.headers["x-auth-token"];
     const payload = jwt.verify(token, Buffer.from(secret, "base64"));
